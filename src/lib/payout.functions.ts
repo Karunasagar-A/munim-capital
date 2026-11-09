@@ -97,7 +97,7 @@ type StatusResult =
   | {
       ok: true;
       batchStatus: string;
-      feesUsd: string | null;
+      fees: string | null;
       transactionId: string | null;
       transactionStatus: string | null;
       timeCompleted: string | null;
@@ -116,7 +116,7 @@ export const getPayoutStatus = createServerFn({ method: "POST" })
       return {
         ok: true,
         batchStatus: res.batch_header.batch_status,
-        feesUsd: res.batch_header.fees?.value ?? item?.payout_item_fee?.value ?? null,
+        fees: res.batch_header.fees?.value ?? item?.payout_item_fee?.value ?? null,
         transactionId: item?.transaction_id ?? null,
         transactionStatus: item?.transaction_status ?? null,
         timeCompleted: res.batch_header.time_completed ?? null,
