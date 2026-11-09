@@ -8,7 +8,7 @@ import { IdentityStep } from "@/components/app/IdentityStep";
 import { FinancialStep, financialErrors } from "@/components/app/FinancialStep";
 import { VideoKyc } from "@/components/app/VideoKyc";
 import { Button } from "@/components/ui/button";
-import { BOT_INTRO, POLICY, formatInr, initialNegotiation, underwrite } from "@/lib/bre";
+import { BOT_INTRO, POLICY, formatUsd, initialNegotiation, underwrite } from "@/lib/bre";
 import { setState, uid, type AppState, type AuditEvent, type Loan } from "@/lib/store";
 
 export const Route = createFileRoute("/apply")({
@@ -69,8 +69,8 @@ function ApplyPage() {
       cibil: f.cibil,
       vintageMonths: f.vintageMonths,
       salesGrowthPct: f.salesGrowthPct,
-      monthlyTurnoverInr: f.monthlyTurnoverInr,
-      requestedAmountInr: f.requestedAmountInr,
+      monthlyTurnoverUsd: f.monthlyTurnoverUsd,
+      requestedAmountUsd: f.requestedAmountUsd,
     };
     const uw = underwrite(profile);
     const now = () => new Date().toISOString();
@@ -167,12 +167,12 @@ function ApplyPage() {
               }
             />
           </Panel>
-          <Panel kicker="Business" title={formatInr(f.requestedAmountInr)}>
-            <KeyValue k="Payout" v={`${formatInr(f.requestedAmountInr)} INR`} />
+          <Panel kicker="Business" title={formatUsd(f.requestedAmountUsd)}>
+            <KeyValue k="Payout" v={`${formatUsd(f.requestedAmountUsd)} INR`} />
             <KeyValue k="CIBIL" v={f.cibil} />
             <KeyValue k="Vintage" v={`${f.vintageMonths} months`} />
             <KeyValue k="Sales growth" v={`${f.salesGrowthPct}%`} />
-            <KeyValue k="Monthly turnover" v={formatInr(f.monthlyTurnoverInr)} />
+            <KeyValue k="Monthly turnover" v={formatUsd(f.monthlyTurnoverUsd)} />
             <KeyValue k="Bank" v={`${f.bankName} •••• ${f.accountNumber.slice(-4)}`} />
             <KeyValue k="PayPal" v={f.payoutEmail} />
           </Panel>

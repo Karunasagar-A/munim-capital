@@ -5,13 +5,13 @@ const base = {
   cibil: 720,
   vintageMonths: 24,
   salesGrowthPct: 12,
-  monthlyTurnoverInr: 400000,
-  requestedAmountInr: 500000,
+  monthlyTurnoverUsd: 400000,
+  requestedAmountUsd: 500000,
 };
 
 describe("underwriting", () => {
   it("auto-approves CIBIL 680, 12 months vintage, growth above 5%, amount up to ₹10L", () => {
-    const r = underwrite({ ...base, cibil: 680, vintageMonths: 12, salesGrowthPct: 5.1, requestedAmountInr: 1_000_000 });
+    const r = underwrite({ ...base, cibil: 680, vintageMonths: 12, salesGrowthPct: 5.1, requestedAmountUsd: 1_000_000 });
     expect(r.decision).toBe("AUTO_APPROVED");
     expect(r.apr).toBe(14);
   });
@@ -36,7 +36,7 @@ describe("underwriting", () => {
   });
 
   it("rejects amounts above ₹10 lakh", () => {
-    expect(underwrite({ ...base, requestedAmountInr: 1_000_001 }).decision).toBe("REJECTED");
+    expect(underwrite({ ...base, requestedAmountUsd: 1_000_001 }).decision).toBe("REJECTED");
   });
 });
 

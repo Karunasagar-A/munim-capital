@@ -12,8 +12,8 @@ const disburseInput = z.object({
     cibil: z.number().int().min(300).max(900),
     vintageMonths: z.number().min(0).max(1200),
     salesGrowthPct: z.number().min(-100).max(1000),
-    monthlyTurnoverInr: z.number().min(0),
-    requestedAmountInr: z.number().positive().max(POLICY.maxAmountInr),
+    monthlyTurnoverUsd: z.number().min(0),
+    requestedAmountUsd: z.number().positive().max(POLICY.maxAmountUsd),
   }),
 });
 
@@ -23,7 +23,7 @@ type DisburseResult =
       senderBatchId: string;
       payoutBatchId: string;
       batchStatus: string;
-      amountInr: number;
+      amountUsd: number;
     }
   | { ok: false; error: string };
 
@@ -58,7 +58,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
     )
       return { ok: false, error: `Negotiated APR must be between ${POLICY.floorApr}% and ${POLICY.baselineApr}%.` };
 
-    const amountInr = data.profile.requestedAmountInr;
+    const amountUsd = data.profile.requestedAmountUsd;
     const senderBatchId = `LOAN-${data.loanId}`;
     try {
       const res = await paypal<PayoutBatchResponse>("/v1/payments/payouts", {
@@ -73,7 +73,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
           items: [
             {
               recipient_type: "EMAIL",
-              amount: { value: amountInr.toFixed(2), currency: POLICY.currency },
+              amount: { value: amountUsd.toFixed(2), currency: POLICY.currency },
               receiver: data.recipientEmail,
               note: `Working capital loan ${data.loanId} for ${data.merchantName} at ${data.apr}% APR`,
               sender_item_id: `${data.loanId}-1`,
@@ -86,7 +86,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
         senderBatchId,
         payoutBatchId: res.batch_header.payout_batch_id,
         batchStatus: res.batch_header.batch_status,
-        amountInr,
+        amountUsd,
       };
     } catch (e) {
       return { ok: false, error: e instanceof Error ? e.message : "PayPal payout failed" };

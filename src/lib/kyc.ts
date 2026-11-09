@@ -72,7 +72,7 @@ export async function pennyDrop(account: string, ifsc: string, holder: string) {
     branch: `Branch ${ifsc.slice(5)}`,
     holder: holder || "MERCHANT",
     utr: `UTR${Date.now().toString().slice(-10)}`,
-    creditedInr: 1,
+    creditedUsd: 1,
   };
 }
 

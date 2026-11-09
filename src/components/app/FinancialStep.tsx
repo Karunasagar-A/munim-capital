@@ -5,16 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, KeyValue, Panel } from "@/components/app/bits";
 import { ACCOUNT_RE, IFSC_RE, fetchCibil, pennyDrop } from "@/lib/kyc";
-import { POLICY, formatInr } from "@/lib/bre";
+import { POLICY, formatUsd } from "@/lib/bre";
 import { setState, type AppState } from "@/lib/store";
 
 type Fin = AppState["financials"];
 const patch = (p: Partial<Fin>) => setState((s) => ({ ...s, financials: { ...s.financials, ...p } }));
 
 const SCENARIOS: { label: string; tone: string; values: Partial<Fin> }[] = [
-  { label: "Strong shop", tone: "Auto-approve", values: { cibil: 742, vintageMonths: 36, salesGrowthPct: 14, monthlyTurnoverInr: 450000, requestedAmountInr: 500000 } },
-  { label: "Borderline shop", tone: "Negotiate", values: { cibil: 655, vintageMonths: 18, salesGrowthPct: 4, monthlyTurnoverInr: 280000, requestedAmountInr: 300000 } },
-  { label: "New shop", tone: "Reject", values: { cibil: 590, vintageMonths: 4, salesGrowthPct: 2, monthlyTurnoverInr: 90000, requestedAmountInr: 200000 } },
+  { label: "Strong shop", tone: "Auto-approve", values: { cibil: 742, vintageMonths: 36, salesGrowthPct: 14, monthlyTurnoverUsd: 450000, requestedAmountUsd: 500000 } },
+  { label: "Borderline shop", tone: "Negotiate", values: { cibil: 655, vintageMonths: 18, salesGrowthPct: 4, monthlyTurnoverUsd: 280000, requestedAmountUsd: 300000 } },
+  { label: "New shop", tone: "Reject", values: { cibil: 590, vintageMonths: 4, salesGrowthPct: 2, monthlyTurnoverUsd: 90000, requestedAmountUsd: 200000 } },
 ];
 
 export function financialErrors(f: Fin) {
@@ -23,9 +23,9 @@ export function financialErrors(f: Fin) {
   if (!(f.cibil >= 300 && f.cibil <= 900)) e.cibil = "CIBIL score must be 300–900";
   if (!(f.vintageMonths >= 0)) e.vintageMonths = "Enter months in business";
   if (!Number.isFinite(f.salesGrowthPct)) e.salesGrowthPct = "Enter growth %";
-  if (!(f.monthlyTurnoverInr > 0)) e.monthlyTurnoverInr = "Enter monthly turnover";
-  if (!(f.requestedAmountInr > 0)) e.requestedAmountInr = "Enter an amount";
-  else if (f.requestedAmountInr > POLICY.maxAmountInr) e.requestedAmountInr = "Maximum is ₹10,00,000";
+  if (!(f.monthlyTurnoverUsd > 0)) e.monthlyTurnoverUsd = "Enter monthly turnover";
+  if (!(f.requestedAmountUsd > 0)) e.requestedAmountUsd = "Enter an amount";
+  else if (f.requestedAmountUsd > POLICY.maxAmountUsd) e.requestedAmountUsd = "Maximum is ₹10,00,000";
   if (!/^\S+@\S+\.\S+$/.test(f.payoutEmail)) e.payoutEmail = "Enter the PayPal email to receive funds";
   return e;
 }
@@ -144,8 +144,8 @@ export function FinancialStep({ state, showErrors }: { state: AppState; showErro
           <Field label="Sales growth (YoY %)" htmlFor="growth" error={errs.salesGrowthPct}>
             <Input id="growth" type="number" step="0.1" value={f.salesGrowthPct || ""} onChange={(e) => patch({ salesGrowthPct: num(e.target.value) })} placeholder="12" className="h-11 bg-background font-mono" />
           </Field>
-          <Field label="Monthly turnover (₹)" htmlFor="ta" error={errs.monthlyTurnoverInr} hint={f.monthlyTurnoverInr ? `${formatInr(f.monthlyTurnoverInr)} processed per month` : "Expected monthly sales / processing volume"}>
-            <Input id="ta" type="number" min={0} value={f.monthlyTurnoverInr || ""} onChange={(e) => patch({ monthlyTurnoverInr: num(e.target.value) })} placeholder="350000" className="h-11 bg-background font-mono" />
+          <Field label="Monthly turnover (₹)" htmlFor="ta" error={errs.monthlyTurnoverUsd} hint={f.monthlyTurnoverUsd ? `${formatUsd(f.monthlyTurnoverUsd)} processed per month` : "Expected monthly sales / processing volume"}>
+            <Input id="ta" type="number" min={0} value={f.monthlyTurnoverUsd || ""} onChange={(e) => patch({ monthlyTurnoverUsd: num(e.target.value) })} placeholder="350000" className="h-11 bg-background font-mono" />
           </Field>
         </div>
       </Panel>
@@ -155,10 +155,10 @@ export function FinancialStep({ state, showErrors }: { state: AppState; showErro
           <Field
             label="Requested capital (₹)"
             htmlFor="amount"
-            error={errs.requestedAmountInr}
-            hint={f.requestedAmountInr ? `${formatInr(f.requestedAmountInr)} paid out in INR` : "Up to ₹10,00,000"}
+            error={errs.requestedAmountUsd}
+            hint={f.requestedAmountUsd ? `${formatUsd(f.requestedAmountUsd)} paid out in INR` : "Up to ₹10,00,000"}
           >
-            <Input id="amount" type="number" min={1} max={POLICY.maxAmountInr} value={f.requestedAmountInr || ""} onChange={(e) => patch({ requestedAmountInr: num(e.target.value) })} placeholder="500000" className="h-12 bg-background font-mono text-lg" />
+            <Input id="amount" type="number" min={1} max={POLICY.maxAmountUsd} value={f.requestedAmountUsd || ""} onChange={(e) => patch({ requestedAmountUsd: num(e.target.value) })} placeholder="500000" className="h-12 bg-background font-mono text-lg" />
           </Field>
           <Field label="PayPal email for payout" htmlFor="ppemail" error={errs.payoutEmail} hint="Use a PayPal sandbox personal account to see the money arrive">
             <Input id="ppemail" type="email" value={f.payoutEmail} onChange={(e) => patch({ payoutEmail: e.target.value.trim() })} placeholder="sb-merchant@personal.example.com" className="h-12 bg-background" />
@@ -166,8 +166,8 @@ export function FinancialStep({ state, showErrors }: { state: AppState; showErro
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {[100000, 250000, 500000, 1000000].map((v) => (
-            <button key={v} onClick={() => patch({ requestedAmountInr: v })} className="rounded-full border bg-background px-3 py-1 font-mono text-xs hover:border-primary">
-              {formatInr(v)}
+            <button key={v} onClick={() => patch({ requestedAmountUsd: v })} className="rounded-full border bg-background px-3 py-1 font-mono text-xs hover:border-primary">
+              {formatUsd(v)}
             </button>
           ))}
         </div>

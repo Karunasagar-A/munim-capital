@@ -2,7 +2,7 @@
 // Pure functions, shared by the browser and the payout server function.
 
 export const POLICY = {
-  maxAmountInr: 1_000_000,
+  maxAmountUsd: 1_000_000,
   autoApproveCibil: 680,
   negotiationCibilMin: 620,
   autoApproveVintageMonths: 12,
@@ -33,8 +33,8 @@ export interface FinancialProfile {
   cibil: number;
   vintageMonths: number;
   salesGrowthPct: number;
-  monthlyTurnoverInr: number;
-  requestedAmountInr: number;
+  monthlyTurnoverUsd: number;
+  requestedAmountUsd: number;
 }
 
 export interface RuleCheck {
@@ -69,8 +69,8 @@ export function underwrite(p: FinancialProfile): UnderwritingResult {
     },
     {
       rule: "Ticket size",
-      passed: p.requestedAmountInr > 0 && p.requestedAmountInr <= POLICY.maxAmountInr,
-      detail: `₹${p.requestedAmountInr.toLocaleString("en-IN")} (cap ₹${POLICY.maxAmountInr.toLocaleString("en-IN")})`,
+      passed: p.requestedAmountUsd > 0 && p.requestedAmountUsd <= POLICY.maxAmountUsd,
+      detail: `₹${p.requestedAmountUsd.toLocaleString("en-IN")} (cap ₹${POLICY.maxAmountUsd.toLocaleString("en-IN")})`,
     },
   ];
 
@@ -81,9 +81,9 @@ export function underwrite(p: FinancialProfile): UnderwritingResult {
     reasons.push(
       `Shop vintage of ${p.vintageMonths} months is below the ${POLICY.minVintageMonths}-month minimum.`,
     );
-  if (p.requestedAmountInr > POLICY.maxAmountInr)
+  if (p.requestedAmountUsd > POLICY.maxAmountUsd)
     reasons.push(`Requested amount exceeds the ₹10 lakh cap.`);
-  if (p.requestedAmountInr <= 0) reasons.push(`Requested amount must be greater than zero.`);
+  if (p.requestedAmountUsd <= 0) reasons.push(`Requested amount must be greater than zero.`);
 
   if (reasons.length > 0) return { decision: "REJECTED", apr: null, reasons, checks };
 
@@ -218,5 +218,5 @@ export function emi(principal: number, apr: number, months: number = POLICY.tenu
   return (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 }
 
-export const formatInr = (n: number) =>
+export const formatUsd = (n: number) =>
   `₹${Math.round(n).toLocaleString("en-IN")}`;

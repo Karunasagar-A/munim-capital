@@ -6,7 +6,7 @@ import { CheckCircle2, Copy, Loader2, RefreshCw, Send, TriangleAlert } from "luc
 import { AppShell, PageLoading, useRequireSession } from "@/components/app/AppShell";
 import { AuditLog, KeyValue, Panel, RuleTable } from "@/components/app/bits";
 import { Button } from "@/components/ui/button";
-import { POLICY, emi, formatInr } from "@/lib/bre";
+import { POLICY, emi, formatUsd } from "@/lib/bre";
 import { disburseLoan, getPayoutStatus } from "@/lib/payout.functions";
 import { getState, logEvent, updateLoan } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -59,8 +59,8 @@ function DisbursementPage() {
           cibil: s.financials.cibil,
           vintageMonths: s.financials.vintageMonths,
           salesGrowthPct: s.financials.salesGrowthPct,
-          monthlyTurnoverInr: s.financials.monthlyTurnoverInr,
-          requestedAmountInr: s.financials.requestedAmountInr,
+          monthlyTurnoverUsd: s.financials.monthlyTurnoverUsd,
+          requestedAmountUsd: s.financials.requestedAmountUsd,
         },
       },
     }).catch((e: unknown) => ({ ok: false as const, error: e instanceof Error ? e.message : "Network error" }));
@@ -77,7 +77,7 @@ function DisbursementPage() {
         senderBatchId: res.senderBatchId,
         payoutBatchId: res.payoutBatchId,
         batchStatus: res.batchStatus,
-        amountInr: res.amountInr,
+        amountUsd: res.amountUsd,
         receiver: s.financials.payoutEmail,
         fees: null,
         transactionId: null,
@@ -159,7 +159,7 @@ function DisbursementPage() {
 
   const f = state.financials;
   const p = loan.payout;
-  const monthly = emi(f.requestedAmountInr, loan.apr);
+  const monthly = emi(f.requestedAmountUsd, loan.apr);
   const bs = p?.batchStatus;
   const stages = [
     { label: "Approved", done: true },
@@ -185,7 +185,7 @@ function DisbursementPage() {
           </h1>
         </div>
         <div className="text-right">
-          <p className="font-display text-5xl leading-none">{formatInr(f.requestedAmountInr)}</p>
+          <p className="font-display text-5xl leading-none">{formatUsd(f.requestedAmountUsd)}</p>
           <p className="font-mono text-sm text-muted-foreground">Paid in INR via PayPal</p>
         </div>
       </div>
@@ -226,7 +226,7 @@ function DisbursementPage() {
               <CopyRow k="Transaction ID" v={p.transactionId ?? (polling ? "Waiting for PayPal…" : "—")} />
               <KeyValue k="Item status" v={p.transactionStatus ?? "—"} mono />
               <KeyValue k="Recipient" v={p.receiver} />
-              <KeyValue k="Amount" v={`${formatInr(p.amountInr ?? f.requestedAmountInr)} INR`} mono />
+              <KeyValue k="Amount" v={`${formatUsd(p.amountUsd ?? f.requestedAmountUsd)} INR`} mono />
               <KeyValue k="PayPal fee" v={p.fees ? `₹${p.fees}` : "—"} mono />
               <KeyValue k="Completed" v={p.timeCompleted ? new Date(p.timeCompleted).toLocaleString("en-IN") : "—"} />
               {p.transactionStatus === "UNCLAIMED" && (
@@ -273,11 +273,11 @@ function DisbursementPage() {
 
         <div className="space-y-5">
           <Panel kicker="Approval breakdown" title={`${loan.apr}% APR`}>
-            <KeyValue k="Principal" v={formatInr(f.requestedAmountInr)} />
+            <KeyValue k="Principal" v={formatUsd(f.requestedAmountUsd)} />
             <KeyValue k="Rate" v={`${loan.apr}% APR${loan.decision === "AUTO_APPROVED" ? " (standard)" : " (negotiated)"}`} />
             <KeyValue k="Tenure" v={`${POLICY.tenureMonths} months`} />
-            <KeyValue k="Monthly EMI" v={formatInr(monthly)} />
-            <KeyValue k="Total interest" v={formatInr(monthly * POLICY.tenureMonths - f.requestedAmountInr)} />
+            <KeyValue k="Monthly EMI" v={formatUsd(monthly)} />
+            <KeyValue k="Total interest" v={formatUsd(monthly * POLICY.tenureMonths - f.requestedAmountUsd)} />
           </Panel>
           <Panel kicker="Rule engine" title="Checks">
             <RuleTable checks={loan.checks} />
