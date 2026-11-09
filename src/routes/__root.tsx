@@ -82,13 +82,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Munim Capital — Working capital for micro-merchants" },
+      { title: "Minimum Capital — Working capital for micro-merchants" },
       {
         name: "description",
         content: "Instant e-KYC, video KYC, rule-based underwriting and PayPal disbursement for small shops.",
       },
-      { name: "author", content: "Munim Capital" },
-      { property: "og:title", content: "Munim Capital — Working capital for micro-merchants" },
+      { name: "author", content: "Minimum Capital" },
+      { property: "og:title", content: "Minimum Capital — Working capital for micro-merchants" },
       {
         property: "og:description",
         content: "Instant e-KYC, video KYC, rule-based underwriting and PayPal disbursement for small shops.",

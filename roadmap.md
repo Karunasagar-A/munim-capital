@@ -1,4 +1,4 @@
-# Munim Capital — roadmap
+# Minimum Capital — roadmap
 
 - [x] Connect PayPal sandbox (connector)
 - [x] Design system (ledger green + marigold, serif display)

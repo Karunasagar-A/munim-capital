@@ -14,12 +14,12 @@ import { setState, useAppState, type Session } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Munim Capital — Sign in for working capital" },
+      { title: "Minimum Capital — Sign in for working capital" },
       {
         name: "description",
         content: "Sign in to apply for up to $12,000 of working capital with instant KYC and same-day PayPal disbursement.",
       },
-      { property: "og:title", content: "Munim Capital — Working capital for your shop" },
+      { property: "og:title", content: "Minimum Capital — Working capital for your shop" },
       {
         property: "og:description",
         content: "Instant KYC, transparent rules and same-day PayPal disbursement for micro-merchants.",
@@ -179,7 +179,7 @@ function OtpForm({ onDone }: { onDone: (s: Session) => void }) {
 
   function verify() {
     if (otp !== sent) return setErr("That code doesn't match. Check the demo OTP notification.");
-    onDone({ name: name.trim(), email: `${mobile}@merchant.munim.demo`, mobile, method: "otp" });
+    onDone({ name: name.trim(), email: `${mobile}@merchant.minimumcapital.demo`, mobile, method: "otp" });
   }
 
   return (

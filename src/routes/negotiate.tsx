@@ -21,10 +21,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/negotiate")({
   head: () => ({
     meta: [
-      { title: "Negotiate your rate — Munim Capital" },
+      { title: "Negotiate your rate — Minimum Capital" },
       { name: "description", content: "Chat with our Risk Officer to agree an interest rate between 16% and 18% APR." },
-      { property: "og:title", content: "Negotiate your rate — Munim Capital" },
-      { property: "og:description", content: "Live rate negotiation with the Munim Capital Risk Officer." },
+      { property: "og:title", content: "Negotiate your rate — Minimum Capital" },
+      { property: "og:description", content: "Live rate negotiation with the Minimum Capital Risk Officer." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -236,7 +236,7 @@ function NegotiatePage() {
           )}
           <label className="flex items-start gap-3 text-sm">
             <Checkbox checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5" />
-            <span>I accept the loan terms and authorise Munim Capital to disburse funds to my PayPal account.</span>
+            <span>I accept the loan terms and authorise Minimum Capital to disburse funds to my PayPal account.</span>
           </label>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setContractOpen(false)}>
