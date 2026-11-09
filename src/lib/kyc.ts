@@ -36,7 +36,7 @@ export async function verifyPanNsdl(pan: string, fallbackName: string) {
   const name = (fallbackName || "Merchant").toUpperCase();
   return {
     name,
-    holderType: PAN_HOLDER_TYPES[pan[3]] ?? "Individual",
+    holderType: PAN_HOLDER_TYPES[pan.charAt(3)] ?? "Individual",
     status: "VALID — E (Existing and Valid)",
   };
 }

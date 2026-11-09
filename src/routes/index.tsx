@@ -127,11 +127,11 @@ function EmailForm({ onDone }: { onDone: (s: Session) => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState<Record<string, string>>({});
+  const [err, setErr] = useState<{ name?: string; email?: string; password?: string }>({});
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const next: Record<string, string> = {};
+    const next: { name?: string; email?: string; password?: string } = {};
     if (name.trim().length < 2) next.name = "Enter the name on your PAN card";
     if (!/^\S+@\S+\.\S+$/.test(email)) next.email = "Enter a valid email";
     if (password.length < 6) next.password = "At least 6 characters";

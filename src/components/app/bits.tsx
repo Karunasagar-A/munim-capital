@@ -14,10 +14,10 @@ export function Field({
   htmlFor,
 }: {
   label: string;
-  hint?: ReactNode;
-  error?: string | null;
+  hint?: ReactNode | undefined;
+  error?: string | null | undefined;
   children: ReactNode;
-  htmlFor?: string;
+  htmlFor?: string | undefined;
 }) {
   return (
     <div className="space-y-1.5">

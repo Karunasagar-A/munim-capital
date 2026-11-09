@@ -160,8 +160,9 @@ export function VideoKyc({ verified, onVerified }: { verified: boolean; onVerifi
       const gray = new Uint8ClampedArray(W * H);
       let light = 0;
       for (let p = 0, g = 0; p < data.length; p += 4, g++) {
-        gray[g] = (data[p] * 0.299 + data[p + 1] * 0.587 + data[p + 2] * 0.114) | 0;
-        light += gray[g];
+        const gv = (data[p]! * 0.299 + data[p + 1]! * 0.587 + data[p + 2]! * 0.114) | 0;
+        gray[g] = gv;
+        light += gv;
       }
       light /= W * H;
 
@@ -177,7 +178,7 @@ export function VideoKyc({ verified, onVerified }: { verified: boolean; onVerifi
             const ny = (y - H / 2) / (H * 0.42);
             if (nx * nx + ny * ny > 1) continue; // inside the face oval only
             const i = y * W + x;
-            const d = Math.abs(gray[i] - a.prev[i]);
+            const d = Math.abs(gray[i]! - a.prev[i]!);
             motion += d;
             n++;
             if (d > 25) {
@@ -199,7 +200,7 @@ export function VideoKyc({ verified, onVerified }: { verified: boolean; onVerifi
       a.dwell++;
       setMetrics({ motion: Math.round(motion * 10) / 10, light: Math.round(light) });
 
-      const ch = CHALLENGES[current].id;
+      const ch = CHALLENGES[current]!.id;
       let progress = 0;
       if (ch === "blink") {
         if (a.armed && motion > high) {
@@ -238,7 +239,7 @@ export function VideoKyc({ verified, onVerified }: { verified: boolean; onVerifi
   }, [mode, finish]);
 
   const running = mode === "camera" || mode === "simulated";
-  const ch = CHALLENGES[Math.min(index, CHALLENGES.length - 1)];
+  const ch = CHALLENGES[Math.min(index, CHALLENGES.length - 1)]!;
   const R = 46;
   const C = 2 * Math.PI * R;
 

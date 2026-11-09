@@ -64,7 +64,7 @@ export interface PayoutInfo {
 export interface AuditEvent {
   at: string;
   label: string;
-  tone?: "ok" | "warn" | "bad" | "info";
+  tone?: "ok" | "warn" | "bad" | "info" | undefined;
 }
 
 export interface Loan {
