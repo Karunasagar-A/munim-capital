@@ -260,7 +260,13 @@ function ApplyPage() {
             Amounts above {formatUsd(POLICY.disbursementCapUsd)} are settled personally rather than paid out online.
           </p>
           <DialogFooter>
-            <Button variant="ledger" onClick={() => setReferralOpen(false)}>
+            <Button
+              variant="ledger"
+              onClick={() => {
+                setReferralOpen(false);
+                navigate({ to: "/decision" });
+              }}
+            >
               Got it
             </Button>
           </DialogFooter>
