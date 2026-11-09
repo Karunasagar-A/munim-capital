@@ -245,8 +245,8 @@ function DisbursementPage() {
               {loan.events.some((e) => e.label.includes("PAYOUT_NOT_AVAILABLE")) && (
                 <p className="rounded-lg bg-accent/15 p-3 text-xs text-accent-foreground">
                   PayPal says the connected sandbox business account is in a country that can't send payouts (India,
-                  for example). PayPal also only handles rupee (INR) balances inside India, so rupee payouts through
-                  PayPal Payouts aren't available to this account.
+                  for example). Dollar payouts need a sandbox business account registered in a payout-enabled country,
+                  such as the US.
                 </p>
               )}
               <Button

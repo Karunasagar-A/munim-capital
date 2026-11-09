@@ -9,7 +9,7 @@
 - [x] Business rule engine + tests
 - [x] Negotiation chat (18% start, 16% floor) + Accept & Disburse modal
 - [x] Real PayPal sandbox payouts + live status tracker (code done)
-- [ ] Successful sandbox payout in INR — blocked: new PayPal sandbox account also refused (PAYOUT_NOT_AVAILABLE, country can't send payouts); PayPal only supports INR inside India
+- [ ] Successful sandbox payout in USD — blocked: connected PayPal sandbox business account is in a country that cannot send payouts (PAYOUT_NOT_AVAILABLE); needs a US sandbox business account
 - [x] Rejection page with policy reasons and audit log
-- [x] INR-only amounts and payouts
+- [x] USD-only amounts and payouts (replaced INR)
 - [x] Tougher negotiation (small concessions, counter above ask)
