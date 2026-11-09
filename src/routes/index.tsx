@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
       { title: "Munim Capital — Sign in for working capital" },
       {
         name: "description",
-        content: "Sign in to apply for up to ₹10 lakh of working capital with instant KYC and same-day PayPal disbursement.",
+        content: "Sign in to apply for up to $12,000 of working capital with instant KYC and same-day PayPal disbursement.",
       },
       { property: "og:title", content: "Munim Capital — Working capital for your shop" },
       {
@@ -59,7 +59,7 @@ function LoginPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary-deep/40 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-12 text-primary-foreground">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Working capital · up to ₹10 lakh</p>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Working capital · up to $12,000</p>
           <h1 className="mt-3 max-w-lg text-6xl leading-[0.95]">
             Credit that keeps <em className="text-accent">your shelves</em> full.
           </h1>

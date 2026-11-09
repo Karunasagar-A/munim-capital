@@ -36,8 +36,8 @@ export interface Financials {
   cibil: number;
   vintageMonths: number;
   salesGrowthPct: number;
-  monthlyTurnoverInr: number;
-  requestedAmountInr: number;
+  monthlyTurnoverUsd: number;
+  requestedAmountUsd: number;
   payoutEmail: string;
 }
 
@@ -52,7 +52,7 @@ export interface PayoutInfo {
   senderBatchId: string;
   payoutBatchId: string;
   batchStatus: string;
-  amountInr: number;
+  amountUsd: number;
   receiver: string;
   fees: string | null;
   transactionId: string | null;
@@ -89,7 +89,7 @@ export interface AppState {
   loan: Loan | null;
 }
 
-const KEY = "munim-capital:v1";
+const KEY = "munim-capital:v2-usd";
 
 export const initialState: AppState = {
   session: null,
@@ -113,8 +113,8 @@ export const initialState: AppState = {
     cibil: 0,
     vintageMonths: 0,
     salesGrowthPct: 0,
-    monthlyTurnoverInr: 0,
-    requestedAmountInr: 0,
+    monthlyTurnoverUsd: 0,
+    requestedAmountUsd: 0,
     payoutEmail: "",
   },
   loan: null,

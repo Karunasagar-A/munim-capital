@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { POLICY, emi, formatInr, negotiate } from "@/lib/bre";
+import { POLICY, emi, formatUsd, negotiate } from "@/lib/bre";
 import { logEvent, uid, updateLoan } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +62,7 @@ function NegotiatePage() {
 
   const neg = loan.negotiation;
   const agreed = neg.agreedApr;
-  const amount = state.financials.requestedAmountInr;
+  const amount = state.financials.requestedAmountUsd;
 
   function send(msg: string) {
     const m = msg.trim();
@@ -203,9 +203,9 @@ function NegotiatePage() {
               <span>Floor {POLICY.floorApr}%</span>
             </div>
             <div className="mt-4">
-              <KeyValue k="Principal" v={formatInr(amount)} />
-              <KeyValue k="Payout" v={`${formatInr(amount)} INR`} />
-              <KeyValue k={`EMI · ${POLICY.tenureMonths} months`} v={formatInr(monthly)} />
+              <KeyValue k="Principal" v={formatUsd(amount)} />
+              <KeyValue k="Payout" v={`${formatUsd(amount)} USD`} />
+              <KeyValue k={`EMI · ${POLICY.tenureMonths} months`} v={formatUsd(monthly)} />
               <KeyValue k="Rounds" v={neg.rounds} />
             </div>
           </Panel>
@@ -225,13 +225,13 @@ function NegotiatePage() {
           </DialogHeader>
           {agreed != null && (
             <div className="rounded-xl border bg-secondary/40 px-4 py-1">
-              <KeyValue k="Principal" v={formatInr(amount)} />
+              <KeyValue k="Principal" v={formatUsd(amount)} />
               <KeyValue k="Agreed rate" v={`${agreed}% APR`} />
               <KeyValue k="Tenure" v={`${POLICY.tenureMonths} months`} />
-              <KeyValue k="Monthly EMI" v={formatInr(emi(amount, agreed))} />
-              <KeyValue k="Total repayable" v={formatInr(emi(amount, agreed) * POLICY.tenureMonths)} />
+              <KeyValue k="Monthly EMI" v={formatUsd(emi(amount, agreed))} />
+              <KeyValue k="Total repayable" v={formatUsd(emi(amount, agreed) * POLICY.tenureMonths)} />
               <KeyValue k="Disbursed to" v={state.financials.payoutEmail} />
-              <KeyValue k="PayPal amount" v={`${formatInr(amount)} INR`} mono />
+              <KeyValue k="PayPal amount" v={`${formatUsd(amount)} USD`} mono />
             </div>
           )}
           <label className="flex items-start gap-3 text-sm">
