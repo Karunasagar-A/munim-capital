@@ -200,7 +200,7 @@ export function negotiate(state: NegotiationState, message: string): BotReply {
       `I'm stretching here. ${counter}% APR, and that's with your sales history in mind.`,
       `I'm close to my limit. ${counter}% APR is the best I can do on this round.`,
     ];
-    reply = lines[Math.min(state.rounds, lines.length - 1)];
+    reply = lines[Math.min(state.rounds, lines.length - 1)] ?? `I can move to ${counter}% APR.`;
   }
   return { reply, state: { ...next, currentOffer: counter } };
 }
