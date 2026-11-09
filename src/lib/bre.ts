@@ -2,7 +2,7 @@
 // Pure functions, shared by the browser and the payout server function.
 
 export const POLICY = {
-  maxAmountUsd: 1_000_000,
+  maxAmountUsd: 12_000,
   autoApproveCibil: 680,
   negotiationCibilMin: 620,
   autoApproveVintageMonths: 12,
@@ -11,7 +11,7 @@ export const POLICY = {
   defaultApr: 14,
   baselineApr: 18,
   floorApr: 16,
-  currency: "INR",
+  currency: "USD",
   tenureMonths: 12,
 } as const;
 
@@ -70,7 +70,7 @@ export function underwrite(p: FinancialProfile): UnderwritingResult {
     {
       rule: "Ticket size",
       passed: p.requestedAmountUsd > 0 && p.requestedAmountUsd <= POLICY.maxAmountUsd,
-      detail: `₹${p.requestedAmountUsd.toLocaleString("en-IN")} (cap ₹${POLICY.maxAmountUsd.toLocaleString("en-IN")})`,
+      detail: `$${p.requestedAmountUsd.toLocaleString("en-US")} (cap $${POLICY.maxAmountUsd.toLocaleString("en-US")})`,
     },
   ];
 
@@ -82,7 +82,7 @@ export function underwrite(p: FinancialProfile): UnderwritingResult {
       `Shop vintage of ${p.vintageMonths} months is below the ${POLICY.minVintageMonths}-month minimum.`,
     );
   if (p.requestedAmountUsd > POLICY.maxAmountUsd)
-    reasons.push(`Requested amount exceeds the ₹10 lakh cap.`);
+    reasons.push(`Requested amount exceeds the $${POLICY.maxAmountUsd.toLocaleString("en-US")} cap.`);
   if (p.requestedAmountUsd <= 0) reasons.push(`Requested amount must be greater than zero.`);
 
   if (reasons.length > 0) return { decision: "REJECTED", apr: null, reasons, checks };
@@ -219,4 +219,4 @@ export function emi(principal: number, apr: number, months: number = POLICY.tenu
 }
 
 export const formatUsd = (n: number) =>
-  `₹${Math.round(n).toLocaleString("en-IN")}`;
+  `$${Math.round(n).toLocaleString("en-US")}`;

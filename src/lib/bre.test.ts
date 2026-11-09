@@ -5,13 +5,13 @@ const base = {
   cibil: 720,
   vintageMonths: 24,
   salesGrowthPct: 12,
-  monthlyTurnoverUsd: 400000,
-  requestedAmountUsd: 500000,
+  monthlyTurnoverUsd: 4800,
+  requestedAmountUsd: 6000,
 };
 
 describe("underwriting", () => {
-  it("auto-approves CIBIL 680, 12 months vintage, growth above 5%, amount up to ₹10L", () => {
-    const r = underwrite({ ...base, cibil: 680, vintageMonths: 12, salesGrowthPct: 5.1, requestedAmountUsd: 1_000_000 });
+  it("auto-approves CIBIL 680, 12 months vintage, growth above 5%, amount up to $12,000", () => {
+    const r = underwrite({ ...base, cibil: 680, vintageMonths: 12, salesGrowthPct: 5.1, requestedAmountUsd: 12_000 });
     expect(r.decision).toBe("AUTO_APPROVED");
     expect(r.apr).toBe(14);
   });
@@ -35,14 +35,14 @@ describe("underwriting", () => {
     expect(underwrite({ ...base, vintageMonths: 5 }).decision).toBe("REJECTED");
   });
 
-  it("rejects amounts above ₹10 lakh", () => {
-    expect(underwrite({ ...base, requestedAmountUsd: 1_000_001 }).decision).toBe("REJECTED");
+  it("rejects amounts above $12,000", () => {
+    expect(underwrite({ ...base, requestedAmountUsd: 12_001 }).decision).toBe("REJECTED");
   });
 });
 
 describe("currency", () => {
-  it("pays out in INR only", () => {
-    expect(POLICY.currency).toBe("INR");
+  it("pays out in USD only", () => {
+    expect(POLICY.currency).toBe("USD");
   });
 });
 

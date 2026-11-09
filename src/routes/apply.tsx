@@ -168,7 +168,7 @@ function ApplyPage() {
             />
           </Panel>
           <Panel kicker="Business" title={formatUsd(f.requestedAmountUsd)}>
-            <KeyValue k="Payout" v={`${formatUsd(f.requestedAmountUsd)} INR`} />
+            <KeyValue k="Payout" v={`${formatUsd(f.requestedAmountUsd)} USD`} />
             <KeyValue k="CIBIL" v={f.cibil} />
             <KeyValue k="Vintage" v={`${f.vintageMonths} months`} />
             <KeyValue k="Sales growth" v={`${f.salesGrowthPct}%`} />

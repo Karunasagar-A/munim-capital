@@ -137,7 +137,7 @@ function DisbursementPage() {
         );
         if (prev !== r.batchStatus) {
           logEvent(
-            `PayPal batch status → ${r.batchStatus}${r.transactionStatus ? ` · item ${r.transactionStatus}` : ""}${r.fees ? ` · fee ₹${r.fees}` : ""}`,
+            `PayPal batch status → ${r.batchStatus}${r.transactionStatus ? ` · item ${r.transactionStatus}` : ""}${r.fees ? ` · fee $${r.fees}` : ""}`,
             r.batchStatus === "SUCCESS" ? "ok" : r.batchStatus === "DENIED" ? "bad" : "info",
           );
           if (r.batchStatus === "SUCCESS") toast.success("Funds disbursed!");
@@ -186,7 +186,7 @@ function DisbursementPage() {
         </div>
         <div className="text-right">
           <p className="font-display text-5xl leading-none">{formatUsd(f.requestedAmountUsd)}</p>
-          <p className="font-mono text-sm text-muted-foreground">Paid in INR via PayPal</p>
+          <p className="font-mono text-sm text-muted-foreground">Paid in USD via PayPal</p>
         </div>
       </div>
 
@@ -226,8 +226,8 @@ function DisbursementPage() {
               <CopyRow k="Transaction ID" v={p.transactionId ?? (polling ? "Waiting for PayPal…" : "—")} />
               <KeyValue k="Item status" v={p.transactionStatus ?? "—"} mono />
               <KeyValue k="Recipient" v={p.receiver} />
-              <KeyValue k="Amount" v={`${formatUsd(p.amountUsd ?? f.requestedAmountUsd)} INR`} mono />
-              <KeyValue k="PayPal fee" v={p.fees ? `₹${p.fees}` : "—"} mono />
+              <KeyValue k="Amount" v={`${formatUsd(p.amountUsd ?? f.requestedAmountUsd)} USD`} mono />
+              <KeyValue k="PayPal fee" v={p.fees ? `$${p.fees}` : "—"} mono />
               <KeyValue k="Completed" v={p.timeCompleted ? new Date(p.timeCompleted).toLocaleString("en-IN") : "—"} />
               {p.transactionStatus === "UNCLAIMED" && (
                 <p className="mt-4 rounded-lg bg-accent/15 p-3 text-xs text-accent-foreground">

@@ -204,7 +204,7 @@ function NegotiatePage() {
             </div>
             <div className="mt-4">
               <KeyValue k="Principal" v={formatUsd(amount)} />
-              <KeyValue k="Payout" v={`${formatUsd(amount)} INR`} />
+              <KeyValue k="Payout" v={`${formatUsd(amount)} USD`} />
               <KeyValue k={`EMI · ${POLICY.tenureMonths} months`} v={formatUsd(monthly)} />
               <KeyValue k="Rounds" v={neg.rounds} />
             </div>
@@ -231,7 +231,7 @@ function NegotiatePage() {
               <KeyValue k="Monthly EMI" v={formatUsd(emi(amount, agreed))} />
               <KeyValue k="Total repayable" v={formatUsd(emi(amount, agreed) * POLICY.tenureMonths)} />
               <KeyValue k="Disbursed to" v={state.financials.payoutEmail} />
-              <KeyValue k="PayPal amount" v={`${formatUsd(amount)} INR`} mono />
+              <KeyValue k="PayPal amount" v={`${formatUsd(amount)} USD`} mono />
             </div>
           )}
           <label className="flex items-start gap-3 text-sm">
