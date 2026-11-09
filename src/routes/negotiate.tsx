@@ -47,7 +47,7 @@ function NegotiatePage() {
   useEffect(() => {
     if (!ready) return;
     if (!loan) navigate({ to: "/apply" });
-    else if (loan.status !== "NEGOTIATING") navigate({ to: loan.status === "REJECTED" ? "/decision" : "/disbursement" });
+    else if (loan.status !== "NEGOTIATING") navigate({ to: loan.status === "REJECTED" || loan.status === "REFERRED" ? "/decision" : "/disbursement" });
   }, [ready, loan, navigate]);
 
   useEffect(() => {

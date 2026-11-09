@@ -40,7 +40,7 @@ function DisbursementPage() {
     if (!ready) return;
     if (!loan) navigate({ to: "/apply" });
     else if (loan.status === "NEGOTIATING") navigate({ to: "/negotiate" });
-    else if (loan.status === "REJECTED") navigate({ to: "/decision" });
+    else if (loan.status === "REJECTED" || loan.status === "REFERRED") navigate({ to: "/decision" });
   }, [ready, loan, navigate]);
 
   async function runPayout() {
