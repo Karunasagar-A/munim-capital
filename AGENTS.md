@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Credit policy lives only in `src/lib/bre.ts` (pure functions); the payout server function re-runs `underwrite()` so the browser can't push an ineligible payout. Keep `src/lib/bre.test.ts` in sync with policy changes.
+- Demo-mode app state (session, KYC, loan, chat, audit log) lives in `src/lib/store.ts` (localStorage via useSyncExternalStore); there is no database — add Lovable Cloud before introducing real accounts.
+- PayPal calls go only through `src/lib/paypal.server.ts` (connector gateway, server-side); never call api-m.paypal.com or embed PayPal credentials.
+- e-KYC providers (NSDL, UIDAI, telecom OTP, penny drop, bureau) are simulated in `src/lib/kyc.ts`; swap implementations there when real providers are added.
