@@ -11,8 +11,20 @@ export const POLICY = {
   defaultApr: 14,
   baselineApr: 18,
   floorApr: 16,
-  inrPerUsd: 83.33,
+  currency: "INR",
   tenureMonths: 12,
+} as const;
+
+/** How hard the Risk Officer bargains. */
+export const NEGOTIATION = {
+  /** Most the bot will drop its offer in one round. */
+  maxConcession: 0.5,
+  /** Least the bot drops when it does concede. */
+  minConcession: 0.25,
+  /** Bot counters at least this far above the merchant's ask. */
+  marginAboveAsk: 0.5,
+  /** Ask within this gap of the current offer gets accepted. */
+  closeEnough: 0.25,
 } as const;
 
 export type Decision = "AUTO_APPROVED" | "NEGOTIATION_REQUIRED" | "REJECTED";
@@ -140,41 +152,65 @@ export function negotiate(state: NegotiationState, message: string): BotReply {
       };
     }
     return {
-      reply: `My current offer is ${state.currentOffer}% APR. Tell me the rate you have in mind, e.g. "Can you offer 16.5%?"`,
+      reply: `My offer stands at ${state.currentOffer}% APR. If you want a lower rate, name it, e.g. "Can you offer 16.5%?"`,
       state,
     };
   }
 
   const r = round2(rate);
   const next = { ...state, rounds: state.rounds + 1 };
+  const offer = state.currentOffer;
 
-  if (r >= POLICY.floorApr && r <= POLICY.baselineApr) {
-    // Never agree above what the bot has already offered.
-    const agreed = Math.min(r, state.currentOffer);
-    return { reply: `Offer accepted at ${agreed}% APR!`, state: { ...next, agreedApr: agreed } };
-  }
-
-  if (r > POLICY.baselineApr) {
+  // Asking for the current offer or more: lock in the current offer.
+  if (r >= offer) {
     return {
-      reply: `No need to pay more — offer accepted at ${state.currentOffer}% APR!`,
-      state: { ...next, agreedApr: state.currentOffer },
+      reply: r > offer ? `No need to pay more — offer accepted at ${offer}% APR!` : `Offer accepted at ${offer}% APR!`,
+      state: { ...next, agreedApr: offer },
     };
   }
 
-  // Below the floor: decline and step the counter-proposal down toward the floor.
-  const counter = Math.max(POLICY.floorApr, round2(state.currentOffer - 1));
-  const atFloor = counter === POLICY.floorApr;
-  return {
-    reply: atFloor
-      ? `I can't go below ${POLICY.floorApr}% APR for your risk band — that's my final offer at ${counter}% APR.`
-      : `${r}% is below what policy allows. I can come down to ${counter}% APR.`,
-    state: { ...next, currentOffer: counter },
-  };
+  // The merchant has bargained to within a hair of the offer: meet them there.
+  if (r >= POLICY.floorApr && offer - r <= NEGOTIATION.closeEnough) {
+    return { reply: `Offer accepted at ${r}% APR!`, state: { ...next, agreedApr: r } };
+  }
+
+  // Already at the floor: hold firm.
+  if (offer <= POLICY.floorApr) {
+    return {
+      reply: `I can't go below ${POLICY.floorApr}% APR for your risk band. That's my final offer — say "accept" to lock it in.`,
+      state: next,
+    };
+  }
+
+  // Counter slightly above the ask, conceding only a little each round.
+  let counter = ceilQuarter(
+    Math.max(r + NEGOTIATION.marginAboveAsk, offer - NEGOTIATION.maxConcession, POLICY.floorApr),
+  );
+  counter = Math.max(POLICY.floorApr, Math.min(counter, round2(offer - NEGOTIATION.minConcession)));
+
+  let reply: string;
+  if (counter === POLICY.floorApr) {
+    reply = `You drive a hard bargain. ${counter}% APR is the lowest our policy allows — that's my final offer.`;
+  } else if (r < POLICY.floorApr) {
+    reply = `${r}% is below what our policy allows for your risk band. The best I can do right now is ${counter}% APR.`;
+  } else {
+    const lines = [
+      `${r}% is too low for a file with borderline signals. I can move to ${counter}% APR.`,
+      `I hear you, but ${r}% doesn't work for us. Let's meet at ${counter}% APR.`,
+      `I'm stretching here. ${counter}% APR, and that's with your sales history in mind.`,
+      `I'm close to my limit. ${counter}% APR is the best I can do on this round.`,
+    ];
+    reply = lines[Math.min(state.rounds, lines.length - 1)];
+  }
+  return { reply, state: { ...next, currentOffer: counter } };
+}
+
+/** Round up to the next 0.25 — the bank rounds in its own favour. */
+function ceilQuarter(n: number) {
+  return Math.ceil(n * 4 - 1e-9) / 4;
 }
 
 // ---------- Money helpers ----------
-
-export const inrToUsd = (inr: number) => round2(inr / POLICY.inrPerUsd);
 
 export function emi(principal: number, apr: number, months: number = POLICY.tenureMonths) {
   const r = apr / 12 / 100;

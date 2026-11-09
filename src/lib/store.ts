@@ -52,9 +52,9 @@ export interface PayoutInfo {
   senderBatchId: string;
   payoutBatchId: string;
   batchStatus: string;
-  amountUsd: number;
+  amountInr: number;
   receiver: string;
-  feesUsd: string | null;
+  fees: string | null;
   transactionId: string | null;
   transactionStatus: string | null;
   timeCompleted: string | null;

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { POLICY, inrToUsd, underwrite } from "./bre";
+import { POLICY, underwrite } from "./bre";
 import { paypal } from "./paypal.server";
 
 const disburseInput = z.object({
@@ -23,7 +23,7 @@ type DisburseResult =
       senderBatchId: string;
       payoutBatchId: string;
       batchStatus: string;
-      amountUsd: number;
+      amountInr: number;
     }
   | { ok: false; error: string };
 
@@ -58,7 +58,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
     )
       return { ok: false, error: `Negotiated APR must be between ${POLICY.floorApr}% and ${POLICY.baselineApr}%.` };
 
-    const amountUsd = inrToUsd(data.profile.requestedAmountInr);
+    const amountInr = data.profile.requestedAmountInr;
     const senderBatchId = `LOAN-${data.loanId}`;
     try {
       const res = await paypal<PayoutBatchResponse>("/v1/payments/payouts", {
@@ -73,7 +73,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
           items: [
             {
               recipient_type: "EMAIL",
-              amount: { value: amountUsd.toFixed(2), currency: "USD" },
+              amount: { value: amountInr.toFixed(2), currency: POLICY.currency },
               receiver: data.recipientEmail,
               note: `Working capital loan ${data.loanId} for ${data.merchantName} at ${data.apr}% APR`,
               sender_item_id: `${data.loanId}-1`,
@@ -86,7 +86,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
         senderBatchId,
         payoutBatchId: res.batch_header.payout_batch_id,
         batchStatus: res.batch_header.batch_status,
-        amountUsd,
+        amountInr,
       };
     } catch (e) {
       return { ok: false, error: e instanceof Error ? e.message : "PayPal payout failed" };
@@ -97,7 +97,7 @@ type StatusResult =
   | {
       ok: true;
       batchStatus: string;
-      feesUsd: string | null;
+      fees: string | null;
       transactionId: string | null;
       transactionStatus: string | null;
       timeCompleted: string | null;
@@ -116,7 +116,7 @@ export const getPayoutStatus = createServerFn({ method: "POST" })
       return {
         ok: true,
         batchStatus: res.batch_header.batch_status,
-        feesUsd: res.batch_header.fees?.value ?? item?.payout_item_fee?.value ?? null,
+        fees: res.batch_header.fees?.value ?? item?.payout_item_fee?.value ?? null,
         transactionId: item?.transaction_id ?? null,
         transactionStatus: item?.transaction_status ?? null,
         timeCompleted: res.batch_header.time_completed ?? null,

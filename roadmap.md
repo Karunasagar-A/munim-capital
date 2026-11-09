@@ -9,5 +9,7 @@
 - [x] Business rule engine + tests
 - [x] Negotiation chat (18% start, 16% floor) + Accept & Disburse modal
 - [x] Real PayPal sandbox payouts + live status tracker (code done)
-- [ ] Successful sandbox payout — blocked: connected PayPal sandbox account's country can't send payouts; user needs a US sandbox business app
+- [ ] Successful sandbox payout in INR — waiting on user reconnecting PayPal with new credentials
 - [x] Rejection page with policy reasons and audit log
+- [x] INR-only amounts and payouts
+- [x] Tougher negotiation (small concessions, counter above ask)
