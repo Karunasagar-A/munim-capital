@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { POLICY, initialNegotiation, negotiate, underwrite, type NegotiationState } from "./bre";
+import {
+  POLICY,
+  initialNegotiation,
+  needsOfficerSettlement,
+  negotiate,
+  underwrite,
+  type NegotiationState,
+} from "./bre";
 
 const base = {
   cibil: 720,
@@ -8,6 +15,23 @@ const base = {
   monthlyTurnoverUsd: 4800,
   requestedAmountUsd: 6000,
 };
+
+describe("$4,000 online disbursement cap", () => {
+  it("pays out up to $4,000 online", () => {
+    expect(POLICY.disbursementCapUsd).toBe(4000);
+    expect(needsOfficerSettlement("AUTO_APPROVED", 4000)).toBe(false);
+    expect(needsOfficerSettlement("NEGOTIATION_REQUIRED", 4000)).toBe(false);
+  });
+
+  it("refers passing applications above $4,000 to our officials", () => {
+    expect(needsOfficerSettlement("AUTO_APPROVED", 4001)).toBe(true);
+    expect(needsOfficerSettlement("NEGOTIATION_REQUIRED", 8000)).toBe(true);
+  });
+
+  it("does not refer rejected applications", () => {
+    expect(needsOfficerSettlement("REJECTED", 8000)).toBe(false);
+  });
+});
 
 describe("underwriting", () => {
   it("auto-approves CIBIL 680, 12 months vintage, growth above 5%, amount up to $12,000", () => {

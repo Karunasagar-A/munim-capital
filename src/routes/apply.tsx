@@ -1,22 +1,38 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Gavel } from "lucide-react";
+import { ArrowLeft, ArrowRight, Gavel, PhoneCall } from "lucide-react";
 import { AppShell, PageLoading, useRequireSession } from "@/components/app/AppShell";
 import { KeyValue, Panel, StepDots } from "@/components/app/bits";
 import { IdentityStep } from "@/components/app/IdentityStep";
 import { FinancialStep, financialErrors } from "@/components/app/FinancialStep";
 import { VideoKyc } from "@/components/app/VideoKyc";
 import { Button } from "@/components/ui/button";
-import { BOT_INTRO, POLICY, formatUsd, initialNegotiation, underwrite } from "@/lib/bre";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  BOT_INTRO,
+  OFFICER_SETTLEMENT_MESSAGE,
+  POLICY,
+  formatUsd,
+  initialNegotiation,
+  needsOfficerSettlement,
+  underwrite,
+} from "@/lib/bre";
 import { setState, uid, type AppState, type AuditEvent, type Loan } from "@/lib/store";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({
     meta: [
-      { title: "Apply for working capital — Munim Capital" },
+      { title: "Apply for working capital — Minimum Capital" },
       { name: "description", content: "Complete e-KYC, video KYC and your business profile to get an instant credit decision." },
-      { property: "og:title", content: "Apply for working capital — Munim Capital" },
+      { property: "og:title", content: "Apply for working capital — Minimum Capital" },
       { property: "og:description", content: "e-KYC, video KYC and business profile in one guided application." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -41,6 +57,7 @@ function ApplyPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<number | null>(null);
   const [showErrors, setShowErrors] = useState(false);
+  const [referralOpen, setReferralOpen] = useState(false);
   const done = stepDone(state);
 
   // Resume at the first incomplete step once saved progress has loaded.
@@ -73,6 +90,7 @@ function ApplyPage() {
       requestedAmountUsd: f.requestedAmountUsd,
     };
     const uw = underwrite(profile);
+    const referred = needsOfficerSettlement(uw.decision, f.requestedAmountUsd);
     const now = () => new Date().toISOString();
     const events: AuditEvent[] = [
       { at: now(), label: `PAN ${state.ekyc.pan} verified (NSDL)`, tone: "ok" },
@@ -86,6 +104,15 @@ function ApplyPage() {
         label: `Decision: ${uw.decision}`,
         tone: uw.decision === "AUTO_APPROVED" ? "ok" : uw.decision === "REJECTED" ? "bad" : "warn",
       },
+      ...(referred
+        ? [
+            {
+              at: now(),
+              label: `Referred to officials: ${formatUsd(f.requestedAmountUsd)} is above the ${formatUsd(POLICY.disbursementCapUsd)} online payout cap`,
+              tone: "info" as const,
+            },
+          ]
+        : []),
     ];
     const loan: Loan = {
       id: uid("ML"),
@@ -93,10 +120,16 @@ function ApplyPage() {
       reasons: uw.reasons,
       checks: uw.checks,
       apr: uw.apr,
-      status: uw.decision === "AUTO_APPROVED" ? "APPROVED" : uw.decision === "REJECTED" ? "REJECTED" : "NEGOTIATING",
-      negotiation: uw.decision === "NEGOTIATION_REQUIRED" ? initialNegotiation() : null,
+      status: referred
+        ? "REFERRED"
+        : uw.decision === "AUTO_APPROVED"
+          ? "APPROVED"
+          : uw.decision === "REJECTED"
+            ? "REJECTED"
+            : "NEGOTIATING",
+      negotiation: !referred && uw.decision === "NEGOTIATION_REQUIRED" ? initialNegotiation() : null,
       chat:
-        uw.decision === "NEGOTIATION_REQUIRED"
+        !referred && uw.decision === "NEGOTIATION_REQUIRED"
           ? [{ id: uid(), from: "bot", text: BOT_INTRO, at: now() }]
           : [],
       payout: null,
@@ -104,7 +137,9 @@ function ApplyPage() {
       createdAt: now(),
     };
     setState((s) => ({ ...s, loan }));
-    if (uw.decision === "AUTO_APPROVED") {
+    if (referred) {
+      setReferralOpen(true);
+    } else if (uw.decision === "AUTO_APPROVED") {
       toast.success("Approved instantly!", { description: `${POLICY.defaultApr}% APR · starting disbursement` });
       navigate({ to: "/disbursement" });
     } else if (uw.decision === "NEGOTIATION_REQUIRED") {
@@ -205,6 +240,38 @@ function ApplyPage() {
           <ArrowLeft /> Back
         </Button>
       )}
+
+      <Dialog
+        open={referralOpen}
+        onOpenChange={(open) => {
+          setReferralOpen(open);
+          if (!open) navigate({ to: "/decision" });
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <span className="mb-2 grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <PhoneCall className="size-6" />
+            </span>
+            <DialogTitle className="font-display text-3xl font-normal">Documents verified</DialogTitle>
+            <DialogDescription className="text-base text-foreground">{OFFICER_SETTLEMENT_MESSAGE}</DialogDescription>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Amounts above {formatUsd(POLICY.disbursementCapUsd)} are settled personally rather than paid out online.
+          </p>
+          <DialogFooter>
+            <Button
+              variant="ledger"
+              onClick={() => {
+                setReferralOpen(false);
+                navigate({ to: "/decision" });
+              }}
+            >
+              Got it
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }

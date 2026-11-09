@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/disbursement")({
   head: () => ({
     meta: [
-      { title: "Disbursement tracker — Munim Capital" },
+      { title: "Disbursement tracker — Minimum Capital" },
       { name: "description", content: "Track your PayPal payout live: batch status, transaction ID and fees." },
-      { property: "og:title", content: "Disbursement tracker — Munim Capital" },
+      { property: "og:title", content: "Disbursement tracker — Minimum Capital" },
       { property: "og:description", content: "Live PayPal payout tracking for your working capital loan." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -40,7 +40,7 @@ function DisbursementPage() {
     if (!ready) return;
     if (!loan) navigate({ to: "/apply" });
     else if (loan.status === "NEGOTIATING") navigate({ to: "/negotiate" });
-    else if (loan.status === "REJECTED") navigate({ to: "/decision" });
+    else if (loan.status === "REJECTED" || loan.status === "REFERRED") navigate({ to: "/decision" });
   }, [ready, loan, navigate]);
 
   async function runPayout() {

@@ -8,10 +8,10 @@ export function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <span className="grid size-8 place-items-center rounded-md bg-ledger font-display text-xl text-primary-foreground shadow-ledger">
-        ₹
+        $
       </span>
       <span className="font-display text-2xl leading-none tracking-tight">
-        Munim <span className="italic text-primary">Capital</span>
+        Minimum <span className="italic text-primary">Capital</span>
       </span>
     </span>
   );
@@ -33,7 +33,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
   const navigate = useNavigate();
   const loan = state.loan;
   const loanTo =
-    loan?.status === "REJECTED"
+    loan?.status === "REJECTED" || loan?.status === "REFERRED"
       ? "/decision"
       : loan?.status === "NEGOTIATING"
         ? "/negotiate"
