@@ -8,7 +8,7 @@ import { IdentityStep } from "@/components/app/IdentityStep";
 import { FinancialStep, financialErrors } from "@/components/app/FinancialStep";
 import { VideoKyc } from "@/components/app/VideoKyc";
 import { Button } from "@/components/ui/button";
-import { BOT_INTRO, POLICY, formatInr, inrToUsd, initialNegotiation, underwrite } from "@/lib/bre";
+import { BOT_INTRO, POLICY, formatInr, initialNegotiation, underwrite } from "@/lib/bre";
 import { setState, uid, type AppState, type AuditEvent, type Loan } from "@/lib/store";
 
 export const Route = createFileRoute("/apply")({
@@ -168,7 +168,7 @@ function ApplyPage() {
             />
           </Panel>
           <Panel kicker="Business" title={formatInr(f.requestedAmountInr)}>
-            <KeyValue k="Payout (USD)" v={`$${inrToUsd(f.requestedAmountInr).toLocaleString("en-US")}`} />
+            <KeyValue k="Payout" v={`${formatInr(f.requestedAmountInr)} INR`} />
             <KeyValue k="CIBIL" v={f.cibil} />
             <KeyValue k="Vintage" v={`${f.vintageMonths} months`} />
             <KeyValue k="Sales growth" v={`${f.salesGrowthPct}%`} />

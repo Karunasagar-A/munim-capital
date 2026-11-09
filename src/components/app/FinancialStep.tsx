@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, KeyValue, Panel } from "@/components/app/bits";
 import { ACCOUNT_RE, IFSC_RE, fetchCibil, pennyDrop } from "@/lib/kyc";
-import { POLICY, formatInr, inrToUsd } from "@/lib/bre";
+import { POLICY, formatInr } from "@/lib/bre";
 import { setState, type AppState } from "@/lib/store";
 
 type Fin = AppState["financials"];
@@ -156,7 +156,7 @@ export function FinancialStep({ state, showErrors }: { state: AppState; showErro
             label="Requested capital (₹)"
             htmlFor="amount"
             error={errs.requestedAmountInr}
-            hint={f.requestedAmountInr ? `${formatInr(f.requestedAmountInr)} ≈ $${inrToUsd(f.requestedAmountInr).toLocaleString("en-US")} USD payout` : "Up to ₹10,00,000"}
+            hint={f.requestedAmountInr ? `${formatInr(f.requestedAmountInr)} paid out in INR` : "Up to ₹10,00,000"}
           >
             <Input id="amount" type="number" min={1} max={POLICY.maxAmountInr} value={f.requestedAmountInr || ""} onChange={(e) => patch({ requestedAmountInr: num(e.target.value) })} placeholder="500000" className="h-12 bg-background font-mono text-lg" />
           </Field>

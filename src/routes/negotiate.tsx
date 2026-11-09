@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { POLICY, emi, formatInr, inrToUsd, negotiate } from "@/lib/bre";
+import { POLICY, emi, formatInr, negotiate } from "@/lib/bre";
 import { logEvent, uid, updateLoan } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -204,7 +204,7 @@ function NegotiatePage() {
             </div>
             <div className="mt-4">
               <KeyValue k="Principal" v={formatInr(amount)} />
-              <KeyValue k="Payout" v={`$${inrToUsd(amount).toLocaleString("en-US")} USD`} />
+              <KeyValue k="Payout" v={`${formatInr(amount)} INR`} />
               <KeyValue k={`EMI · ${POLICY.tenureMonths} months`} v={formatInr(monthly)} />
               <KeyValue k="Rounds" v={neg.rounds} />
             </div>
@@ -231,7 +231,7 @@ function NegotiatePage() {
               <KeyValue k="Monthly EMI" v={formatInr(emi(amount, agreed))} />
               <KeyValue k="Total repayable" v={formatInr(emi(amount, agreed) * POLICY.tenureMonths)} />
               <KeyValue k="Disbursed to" v={state.financials.payoutEmail} />
-              <KeyValue k="PayPal amount" v={`$${inrToUsd(amount).toFixed(2)} USD`} mono />
+              <KeyValue k="PayPal amount" v={`${formatInr(amount)} INR`} mono />
             </div>
           )}
           <label className="flex items-start gap-3 text-sm">
