@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { POLICY, underwrite } from "./bre";
+import { POLICY, needsOfficerSettlement, underwrite } from "./bre";
 import { paypal } from "./paypal.server";
 
 const disburseInput = z.object({
@@ -50,6 +50,11 @@ export const disburseLoan = createServerFn({ method: "POST" })
     // Re-run the rule engine server-side: the browser can't push an ineligible payout.
     const uw = underwrite(data.profile);
     if (uw.decision === "REJECTED") return { ok: false, error: "Application does not meet credit policy." };
+    if (needsOfficerSettlement(uw.decision, data.profile.requestedAmountUsd))
+      return {
+        ok: false,
+        error: `Amounts above $${POLICY.disbursementCapUsd.toLocaleString("en-US")} are settled by our officials, not paid out online.`,
+      };
     if (uw.decision === "AUTO_APPROVED" && data.apr !== POLICY.defaultApr)
       return { ok: false, error: "APR does not match the approved rate." };
     if (
@@ -67,7 +72,7 @@ export const disburseLoan = createServerFn({ method: "POST" })
         body: JSON.stringify({
           sender_batch_header: {
             sender_batch_id: senderBatchId,
-            email_subject: "Your Munim Capital working capital is here",
+            email_subject: "Your Minimum Capital working capital is here",
             email_message: `Loan ${data.loanId} disbursed at ${data.apr}% APR.`,
           },
           items: [

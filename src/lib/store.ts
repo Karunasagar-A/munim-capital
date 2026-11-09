@@ -73,7 +73,8 @@ export interface Loan {
   reasons: string[];
   checks: RuleCheck[];
   apr: number | null;
-  status: "REJECTED" | "NEGOTIATING" | "APPROVED" | "DISBURSING" | "DISBURSED" | "FAILED";
+  /** REFERRED: passed the checks but above the auto-disbursement cap; officials settle it. */
+  status: "REJECTED" | "REFERRED" | "NEGOTIATING" | "APPROVED" | "DISBURSING" | "DISBURSED" | "FAILED";
   negotiation: NegotiationState | null;
   chat: ChatMessage[];
   payout: PayoutInfo | null;

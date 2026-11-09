@@ -3,6 +3,8 @@
 
 export const POLICY = {
   maxAmountUsd: 12_000,
+  /** Largest amount paid out automatically; bigger approved loans go to our officials. */
+  disbursementCapUsd: 4_000,
   autoApproveCibil: 680,
   negotiationCibilMin: 620,
   autoApproveVintageMonths: 12,
@@ -103,6 +105,17 @@ export function underwrite(p: FinancialProfile): UnderwritingResult {
     checks,
   };
 }
+
+/**
+ * Passing applications above the auto-disbursement cap aren't paid out online:
+ * our officials contact the merchant to settle the funds.
+ */
+export function needsOfficerSettlement(decision: Decision, requestedAmountUsd: number) {
+  return decision !== "REJECTED" && requestedAmountUsd > POLICY.disbursementCapUsd;
+}
+
+export const OFFICER_SETTLEMENT_MESSAGE =
+  "All your documents seem to be fine. Our officials from Minimum Capital will contact you to settle the funds.";
 
 // ---------- Negotiation ----------
 
