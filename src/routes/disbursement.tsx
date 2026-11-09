@@ -242,6 +242,13 @@ function DisbursementPage() {
                 <TriangleAlert className="mt-0.5 size-4 shrink-0" />
                 {loan.events.filter((e) => e.tone === "bad").at(-1)?.label ?? "PayPal didn't accept the payout."}
               </p>
+              {loan.events.some((e) => e.label.includes("PAYOUT_NOT_AVAILABLE")) && (
+                <p className="rounded-lg bg-accent/15 p-3 text-xs text-accent-foreground">
+                  The connected PayPal sandbox business account is registered in a country that can't send payouts
+                  (India, for example). Connect a sandbox app owned by a US business account to send live sandbox
+                  payouts.
+                </p>
+              )}
               <Button
                 variant="ledger"
                 onClick={() => {
