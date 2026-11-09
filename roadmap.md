@@ -13,3 +13,5 @@
 - [x] Rejection page with policy reasons and audit log
 - [x] USD-only amounts and payouts (replaced INR)
 - [x] Tougher negotiation (small concessions, counter above ask)
+- [x] Rename to Minimum Capital, $ logo
+- [x] $4,000 online payout cap with officer-callback popup
