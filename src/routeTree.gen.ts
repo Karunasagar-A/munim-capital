@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as DecisionRouteImport } from './routes/decision'
+import { Route as DisbursementRouteImport } from './routes/disbursement'
+import { Route as NegotiateRouteImport } from './routes/negotiate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +25,58 @@ const ApplyRoute = ApplyRouteImport.update({
   path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DecisionRoute = DecisionRouteImport.update({
+  id: '/decision',
+  path: '/decision',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DisbursementRoute = DisbursementRouteImport.update({
+  id: '/disbursement',
+  path: '/disbursement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NegotiateRoute = NegotiateRouteImport.update({
+  id: '/negotiate',
+  path: '/negotiate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
+  '/decision': typeof DecisionRoute
+  '/disbursement': typeof DisbursementRoute
+  '/negotiate': typeof NegotiateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
+  '/decision': typeof DecisionRoute
+  '/disbursement': typeof DisbursementRoute
+  '/negotiate': typeof NegotiateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
+  '/decision': typeof DecisionRoute
+  '/disbursement': typeof DisbursementRoute
+  '/negotiate': typeof NegotiateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apply'
+  fullPaths: '/' | '/apply' | '/decision' | '/disbursement' | '/negotiate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply'
-  id: '__root__' | '/' | '/apply'
+  to: '/' | '/apply' | '/decision' | '/disbursement' | '/negotiate'
+  id: '__root__' | '/' | '/apply' | '/decision' | '/disbursement' | '/negotiate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplyRoute: typeof ApplyRoute
+  DecisionRoute: typeof DecisionRoute
+  DisbursementRoute: typeof DisbursementRoute
+  NegotiateRoute: typeof NegotiateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +95,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/decision': {
+      id: '/decision'
+      path: '/decision'
+      fullPath: '/decision'
+      preLoaderRoute: typeof DecisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/disbursement': {
+      id: '/disbursement'
+      path: '/disbursement'
+      fullPath: '/disbursement'
+      preLoaderRoute: typeof DisbursementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/negotiate': {
+      id: '/negotiate'
+      path: '/negotiate'
+      fullPath: '/negotiate'
+      preLoaderRoute: typeof NegotiateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyRoute: ApplyRoute,
+  DecisionRoute: DecisionRoute,
+  DisbursementRoute: DisbursementRoute,
+  NegotiateRoute: NegotiateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

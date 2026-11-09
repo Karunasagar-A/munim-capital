@@ -66,12 +66,7 @@ function DisbursementPage() {
     }).catch((e: unknown) => ({ ok: false as const, error: e instanceof Error ? e.message : "Network error" }));
 
     if (!res.ok) {
-      updateLoan((x) => ({
-        ...x,
-        status: "FAILED",
-        payout: x.payout ? { ...x.payout, error: res.error } : null,
-      }));
-      if (!getState().loan?.payout) updateLoan((x) => ({ ...x, payout: null }));
+      updateLoan((x) => ({ ...x, status: "FAILED" }));
       logEvent(`Payout failed: ${res.error}`, "bad");
       toast.error("Payout failed", { description: res.error });
       return;
